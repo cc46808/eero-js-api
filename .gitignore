@@ -6,7 +6,10 @@ node_modules
 package-lock.json
 
 # Local temp and config
-.tmp/
+.tmp/*.tmp
 *.log
 .env
 explore-api.js
+
+# Include cookies for Heroku deployment (private app)
+!.tmp/eero_cookies.json
