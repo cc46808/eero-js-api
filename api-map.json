@@ -1,0 +1,320 @@
+{
+  "discovered": "2025-11-12T21:03:56.701Z",
+  "networkUrl": "/2.2/networks/13591687",
+  "endpoints": [
+    {
+      "url": "/2.2/networks/13591687",
+      "parentPath": "network",
+      "hasResources": true,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/ac_compat",
+      "parentPath": "network/ac_compat",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/burst_reporters",
+      "parentPath": "network/burst_reporters",
+      "error": "GET failed to /2.2/networks/13591687/burst_reporters. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/networks/13591687/blacklist",
+      "parentPath": "network/device_blacklist",
+      "hasResources": false,
+      "isArray": true,
+      "type": "array"
+    },
+    {
+      "url": "/2.2/networks/13591687/devices/f207a2a0756c",
+      "parentPath": "network/device_blacklist[0]",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/reservations",
+      "parentPath": "network/device_blacklist[0]/reservations",
+      "hasResources": false,
+      "isArray": true,
+      "type": "array"
+    },
+    {
+      "url": "/2.2/networks/13591687/reservations/d843ae1dff59",
+      "parentPath": "network/device_blacklist[0]/reservations[0]",
+      "error": "GET failed to /2.2/networks/13591687/reservations/d843ae1dff59. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.3/networks/13591687/forwards",
+      "parentPath": "network/device_blacklist[0]/forwards",
+      "hasResources": false,
+      "isArray": true,
+      "type": "array"
+    },
+    {
+      "url": "/2.3/networks/13591687/forwards/2635167",
+      "parentPath": "network/device_blacklist[0]/forwards[0]",
+      "error": "GET failed to /2.3/networks/13591687/forwards/2635167. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/networks/13591687/ipv6/pinholes",
+      "parentPath": "network/device_blacklist[0]/pinholes",
+      "hasResources": false,
+      "isArray": true,
+      "type": "array"
+    },
+    {
+      "url": "/2.2/networks/13591687/ipv6/pinholes/955428",
+      "parentPath": "network/device_blacklist[0]/pinholes[0]",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/devices",
+      "parentPath": "network/devices",
+      "hasResources": false,
+      "isArray": true,
+      "type": "array"
+    },
+    {
+      "url": "/2.2/networks/13591687/devices/84cca894c934",
+      "parentPath": "network/devices[0]",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/eeros/33447806",
+      "parentPath": "network/devices[0]/source",
+      "hasResources": true,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/eeros/33447806/led",
+      "parentPath": "network/devices[0]/source/led_action",
+      "error": "GET failed to /2.2/eeros/33447806/led. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/eeros/33447806/reboot",
+      "parentPath": "network/devices[0]/source/reboot",
+      "error": "GET failed to /2.2/eeros/33447806/reboot. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/eeros/33447806/connections",
+      "parentPath": "network/devices[0]/source/connections",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/diagnostics",
+      "parentPath": "network/diagnostics",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/eeros",
+      "parentPath": "network/eeros",
+      "hasResources": false,
+      "isArray": true,
+      "type": "array"
+    },
+    {
+      "url": "/2.2/eeros/22855804",
+      "parentPath": "network/eeros[0]",
+      "hasResources": true,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/eeros/22855804/led",
+      "parentPath": "network/eeros[0]/led_action",
+      "error": "GET failed to /2.2/eeros/22855804/led. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/eeros/22855804/reboot",
+      "parentPath": "network/eeros[0]/reboot",
+      "error": "GET failed to /2.2/eeros/22855804/reboot. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/eeros/22855804/connections",
+      "parentPath": "network/eeros[0]/connections",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/forwards",
+      "parentPath": "network/forwards",
+      "hasResources": false,
+      "isArray": true,
+      "type": "array"
+    },
+    {
+      "url": "/2.2/networks/13591687/forwards/2635167",
+      "parentPath": "network/forwards[0]",
+      "error": "GET failed to /2.2/networks/13591687/forwards/2635167. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/networks/13591687/ouicheck",
+      "parentPath": "network/ouicheck",
+      "error": "GET failed to /2.2/networks/13591687/ouicheck. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/networks/13591687/guestnetwork",
+      "parentPath": "network/guestnetwork",
+      "hasResources": true,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/guestnetwork/password",
+      "parentPath": "network/guestnetwork/password",
+      "error": "GET failed to /2.2/networks/13591687/guestnetwork/password. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/networks/13591687/password",
+      "parentPath": "network/password",
+      "error": "GET failed to /2.2/networks/13591687/password. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/networks/13591687/profiles",
+      "parentPath": "network/profiles",
+      "hasResources": false,
+      "isArray": true,
+      "type": "array"
+    },
+    {
+      "url": "/2.2/networks/13591687/profiles/6153010",
+      "parentPath": "network/profiles[0]",
+      "hasResources": true,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/profiles/6153010/schedules",
+      "parentPath": "network/profiles[0]/schedules",
+      "error": "GET failed to /2.2/networks/13591687/profiles/6153010/schedules. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/networks/13591687/devices/4e4704d92a36",
+      "parentPath": "network/profiles[0]/devices[0]",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/settings",
+      "parentPath": "network/settings",
+      "error": "GET failed to /2.2/networks/13591687/settings. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/networks/13591687/speedtest",
+      "parentPath": "network/speedtest",
+      "hasResources": false,
+      "isArray": true,
+      "type": "array"
+    },
+    {
+      "url": "/2.2/networks/13591687/transfer",
+      "parentPath": "network/transfer",
+      "error": "GET failed to /2.2/networks/13591687/transfer. Response: 403 Forbidden"
+    },
+    {
+      "url": "/2.2/networks/13591687/updates",
+      "parentPath": "network/updates",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/reboot",
+      "parentPath": "network/reboot",
+      "error": "GET failed to /2.2/networks/13591687/reboot. Response: 404 Not Found"
+    },
+    {
+      "url": "/2.2/networks/13591687/support",
+      "parentPath": "network/support",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/insights",
+      "parentPath": "network/insights",
+      "error": "GET failed to /2.2/networks/13591687/insights. Response: 400 Bad Request"
+    },
+    {
+      "url": "/2.2/networks/13591687/routing",
+      "parentPath": "network/routing",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/thread",
+      "parentPath": "network/thread",
+      "hasResources": false,
+      "isArray": false,
+      "type": "object"
+    },
+    {
+      "url": "/2.2/networks/13591687/clients",
+      "parentPath": "network/clients",
+      "hasResources": false,
+      "isArray": true,
+      "type": "array"
+    }
+  ],
+  "allUrls": [
+    "/2.2/networks/13591687",
+    "/2.2/networks/13591687/ac_compat",
+    "/2.2/networks/13591687/burst_reporters",
+    "/2.2/networks/13591687/blacklist",
+    "/2.2/networks/13591687/devices/f207a2a0756c",
+    "/2.2/networks/13591687/reservations",
+    "/2.2/networks/13591687/reservations/d843ae1dff59",
+    "/2.3/networks/13591687/forwards",
+    "/2.3/networks/13591687/forwards/2635167",
+    "/2.2/networks/13591687/ipv6/pinholes",
+    "/2.2/networks/13591687/ipv6/pinholes/955428",
+    "/2.2/networks/13591687/devices",
+    "/2.2/networks/13591687/devices/84cca894c934",
+    "/2.2/eeros/33447806",
+    "/2.2/eeros/33447806/led",
+    "/2.2/eeros/33447806/reboot",
+    "/2.2/eeros/33447806/connections",
+    "/2.2/networks/13591687/diagnostics",
+    "/2.2/networks/13591687/eeros",
+    "/2.2/eeros/22855804",
+    "/2.2/eeros/22855804/led",
+    "/2.2/eeros/22855804/reboot",
+    "/2.2/eeros/22855804/connections",
+    "/2.2/networks/13591687/forwards",
+    "/2.2/networks/13591687/forwards/2635167",
+    "/2.2/networks/13591687/ouicheck",
+    "/2.2/networks/13591687/guestnetwork",
+    "/2.2/networks/13591687/guestnetwork/password",
+    "/2.2/networks/13591687/password",
+    "/2.2/networks/13591687/profiles",
+    "/2.2/networks/13591687/profiles/6153010",
+    "/2.2/networks/13591687/profiles/6153010/schedules",
+    "/2.2/networks/13591687/devices/4e4704d92a36",
+    "/2.2/networks/13591687/settings",
+    "/2.2/networks/13591687/speedtest",
+    "/2.2/networks/13591687/transfer",
+    "/2.2/networks/13591687/updates",
+    "/2.2/networks/13591687/reboot",
+    "/2.2/networks/13591687/support",
+    "/2.2/networks/13591687/insights",
+    "/2.2/networks/13591687/routing",
+    "/2.2/networks/13591687/thread",
+    "/2.2/networks/13591687/clients"
+  ]
+}

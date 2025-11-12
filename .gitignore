@@ -5,3 +5,8 @@
 node_modules
 package-lock.json
 
+# Local temp and config
+.tmp/
+*.log
+.env
+explore-api.js
