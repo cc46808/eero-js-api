@@ -20,6 +20,20 @@ const PROFILES = {
 	}
 };
 
+// CORS middleware - Allow requests from ChoreHero
+app.use((req, res, next) => {
+	res.header('Access-Control-Allow-Origin', '*'); // Allow all origins (or specify 'https://app.chorehero.cloud')
+	res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+	
+	// Handle preflight requests
+	if (req.method === 'OPTIONS') {
+		return res.sendStatus(200);
+	}
+	
+	next();
+});
+
 // Serve static files (HTML/CSS/JS)
 app.use(express.static('public'));
 app.use(express.json());
