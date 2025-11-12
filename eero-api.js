@@ -9,8 +9,8 @@ const debug = require('debug')('eero')
 const timeout = 5000
 const apiEndpoint = "https://api-user.e2ro.com"
 const apiVersion = "2.2"
-// Use /tmp on Heroku (ephemeral but writable), or local tmp directory
-const tmpDir = process.env.DYNO ? '/tmp' : path.join(__dirname, '.tmp')
+// Use .tmp directory for cookie storage (works locally and on Heroku when committed)
+const tmpDir = path.join(__dirname, '.tmp')
 const cookieFile = path.join(tmpDir, 'eero_cookies.json')
 
 class Eero {
