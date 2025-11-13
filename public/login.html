@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire TV Control - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-status {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .auth-status.authenticated {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .auth-status.not-authenticated {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Fire TV Control</h1>
+        <p class="subtitle">Authenticate with your Eero account</p>
+
+        <div id="authStatus" class="auth-status"></div>
+        <div id="message" class="message"></div>
+
+        <!-- Step 1: Phone Number -->
+        <div id="step1" class="step active">
+            <form id="phoneForm">
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input 
+                        type="tel" 
+                        id="phoneNumber" 
+                        placeholder="+1 (555) 123-4567"
+                        required
+                    >
+                </div>
+                <button type="submit">
+                    Send Verification Code
+                </button>
+            </form>
+        </div>
+
+        <!-- Step 2: Verification Code -->
+        <div id="step2" class="step">
+            <form id="codeForm">
+                <div class="form-group">
+                    <label for="verificationCode">Verification Code</label>
+                    <input 
+                        type="text" 
+                        id="verificationCode" 
+                        placeholder="123456"
+                        maxlength="6"
+                        required
+                    >
+                </div>
+                <button type="submit">
+                    Verify & Login
+                </button>
+            </form>
+            <div class="back-link">
+                <a href="#" id="backLink">← Back to phone number</a>
+            </div>
+        </div>
+
+        <div class="back-link" style="margin-top: 30px;">
+            <a href="/">Go to Fire TV Controls</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        // Check authentication status on load
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/status`);
+                const data = await response.json();
+                
+                const statusDiv = document.getElementById('authStatus');
+                statusDiv.textContent = data.message;
+                statusDiv.className = data.authenticated ? 'auth-status authenticated' : 'auth-status not-authenticated';
+                
+                if (data.authenticated) {
+                    showMessage('You are already authenticated! You can go to the control panel.', 'success');
+                }
+            } catch (error) {
+                console.error('Error checking auth:', error);
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+        }
+
+        function hideMessage() {
+            document.getElementById('message').style.display = 'none';
+        }
+
+        function showStep(stepNumber) {
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+        }
+
+        // Handle phone number submission
+        document.getElementById('phoneForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = e.target.querySelector('button');
+            const originalText = button.textContent;
+            
+            try {
+                hideMessage();
+                button.disabled = true;
+                button.innerHTML = 'Sending... <span class="spinner"></span>';
+                
+                const phoneNumber = document.getElementById('phoneNumber').value;
+                const response = await fetch(`${API_BASE}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phoneNumber })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('Verification code sent to your phone!', 'info');
+                    showStep(2);
+                    document.getElementById('verificationCode').focus();
+                } else {
+                    showMessage(data.error || 'Failed to send code', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                console.error('Error:', error);
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        });
+
+        // Handle verification code submission
+        document.getElementById('codeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = e.target.querySelector('button');
+            const originalText = button.textContent;
+            
+            try {
+                hideMessage();
+                button.disabled = true;
+                button.innerHTML = 'Verifying... <span class="spinner"></span>';
+                
+                const code = document.getElementById('verificationCode').value;
+                const response = await fetch(`${API_BASE}/api/login/verify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('✅ Successfully authenticated! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    showMessage(data.error || 'Invalid verification code', 'error');
+                    if (data.hint) {
+                        showMessage(`${data.error}\n${data.hint}`, 'error');
+                    }
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                console.error('Error:', error);
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        });
+
+        // Back button
+        document.getElementById('backLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            showStep(1);
+            hideMessage();
+        });
+
+        // Check auth status on page load
+        checkAuthStatus();
+    </script>
+</body>
+</html>

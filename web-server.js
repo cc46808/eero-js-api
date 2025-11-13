@@ -96,6 +96,64 @@ app.post('/api/pause/:profile', async (req, res) => {
 	}
 });
 
+// Login - Step 1: Send verification code
+app.post('/api/login', async (req, res) => {
+	try {
+		const { phoneNumber } = req.body;
+		
+		if (!phoneNumber) {
+			return res.status(400).json({ error: 'Phone number is required' });
+		}
+
+		await e.login(phoneNumber);
+		res.json({ 
+			success: true, 
+			message: 'Verification code sent to your phone',
+			phoneNumber
+		});
+	} catch (err) {
+		console.error('Error sending login code:', err);
+		res.status(500).json({ error: err.message });
+	}
+});
+
+// Login - Step 2: Verify code and authenticate
+app.post('/api/login/verify', async (req, res) => {
+	try {
+		const { code } = req.body;
+		
+		if (!code) {
+			return res.status(400).json({ error: 'Verification code is required' });
+		}
+
+		await e.loginVerify(code);
+		res.json({ 
+			success: true, 
+			message: 'Successfully authenticated! Cookie saved.',
+		});
+	} catch (err) {
+		console.error('Error verifying code:', err);
+		res.status(500).json({ 
+			error: err.message,
+			hint: 'Make sure the code is correct and hasn\'t expired'
+		});
+	}
+});
+
+// Check authentication status
+app.get('/api/auth/status', async (req, res) => {
+	try {
+		const isLoggedIn = e._loggedIn();
+		res.json({ 
+			authenticated: isLoggedIn,
+			message: isLoggedIn ? 'Authenticated' : 'Not authenticated - please login'
+		});
+	} catch (err) {
+		console.error('Error checking auth:', err);
+		res.status(500).json({ error: err.message });
+	}
+});
+
 // Unpause a profile
 app.post('/api/unpause/:profile', async (req, res) => {
 	try {
