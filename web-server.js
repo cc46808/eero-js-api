@@ -174,7 +174,7 @@ app.post('/api/unpause/:profile', async (req, res) => {
 		console.error('Error unpausing:', err);
 		res.status(500).json({ error: err.message });
 	}
-});
+}); 
 
 // Unpause a profile when ready (waits for device to be paused first)
 app.post('/api/unpause-when-ready/:profile', async (req, res) => {
