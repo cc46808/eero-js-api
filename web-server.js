@@ -20,6 +20,9 @@ const PROFILES = {
 	}
 };
 
+// Track background jobs
+const backgroundJobs = new Map(); // jobId -> { profile, status, startTime, result }
+
 // CORS middleware - Allow requests from ChoreHero
 app.use((req, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*'); // Allow all origins (or specify 'https://app.chorehero.cloud')
@@ -177,6 +180,7 @@ app.post('/api/unpause/:profile', async (req, res) => {
 }); 
 
 // Unpause a profile when ready (waits for device to be paused first)
+// Returns immediately with a jobId, polling happens in background
 app.post('/api/unpause-when-ready/:profile', async (req, res) => {
 	try {
 		const profileKey = req.params.profile;
@@ -186,79 +190,122 @@ app.post('/api/unpause-when-ready/:profile', async (req, res) => {
 			return res.status(404).json({ error: `Unknown profile: ${profileKey}` });
 		}
 
-		console.log(`[${profile.name}] Starting unpause-when-ready process...`);
+		// Generate unique job ID
+		const jobId = `${profileKey}-${Date.now()}`;
 		
-		// Helper function to check if device is paused
-		const getDevicePausedStatus = async () => {
-			const devices = await e._get(`/2.2/networks/${NETWORK_ID}/devices`);
-			const profileDevices = devices.filter(d => d.profile && d.profile.url === profile.profileUrl);
-			
-			if (profileDevices.length === 0) {
-				throw new Error(`No devices found in ${profile.name} profile`);
-			}
-			
-			return profileDevices[0].paused;
-		};
+		// Initialize job status
+		backgroundJobs.set(jobId, {
+			profile: profileKey,
+			status: 'polling',
+			startTime: new Date().toISOString(),
+			result: null
+		});
+
+		console.log(`[${profile.name}] Starting unpause-when-ready job ${jobId}`);
 		
-		// Poll until device is paused, then unpause it
-		const maxAttempts = 30; // 30 minutes max (30 attempts * 60 seconds)
-		let attempts = 0;
+		// Return immediately with job ID
+		res.json({
+			success: true,
+			jobId: jobId,
+			message: `Background job started for ${profile.name}`,
+			profile: profileKey
+		});
 		
-		const pollAndUnpause = async () => {
-			attempts++;
-			console.log(`[${profile.name}] Polling attempt ${attempts}/${maxAttempts}...`);
+		// Start background polling (non-blocking)
+		(async () => {
+			const maxAttempts = 30; // 30 minutes max
+			let attempts = 0;
 			
-			try {
-				const isPaused = await getDevicePausedStatus();
+			const getDevicePausedStatus = async () => {
+				const devices = await e._get(`/2.2/networks/${NETWORK_ID}/devices`);
+				const profileDevices = devices.filter(d => d.profile && d.profile.url === profile.profileUrl);
+				if (profileDevices.length === 0) {
+					throw new Error(`No devices found in ${profile.name} profile`);
+				}
+				return profileDevices[0].paused;
+			};
+			
+			const pollAndUnpause = async () => {
+				attempts++;
+				console.log(`[${profile.name}] Job ${jobId} - Polling attempt ${attempts}/${maxAttempts}...`);
 				
-				if (!isPaused) {
-					console.log(`[${profile.name}] Device not paused yet...`);
+				try {
+					const isPaused = await getDevicePausedStatus();
+					
+					if (!isPaused) {
+						console.log(`[${profile.name}] Device not paused yet...`);
+						
+						if (attempts >= maxAttempts) {
+							backgroundJobs.set(jobId, {
+								...backgroundJobs.get(jobId),
+								status: 'timeout',
+								result: { success: false, error: 'Max attempts reached' }
+							});
+							return;
+						}
+						
+						// Wait 60 seconds and try again
+						await new Promise(resolve => setTimeout(resolve, 60000));
+						return pollAndUnpause();
+					}
+					
+					// Device is paused, now unpause it
+					console.log(`[${profile.name}] Device is paused, unpausing now...`);
+					await e._put(profile.profileUrl, { paused: false });
+					console.log(`[${profile.name}] Successfully unpaused!`);
+					
+					backgroundJobs.set(jobId, {
+						...backgroundJobs.get(jobId),
+						status: 'completed',
+						result: { success: true, message: `${profile.name} unpaused successfully` }
+					});
+				} catch (err) {
+					console.error(`[${profile.name}] Error during polling:`, err);
 					
 					if (attempts >= maxAttempts) {
-						console.error(`[${profile.name}] Max attempts reached without device being paused`);
-						return false;
+						backgroundJobs.set(jobId, {
+							...backgroundJobs.get(jobId),
+							status: 'failed',
+							result: { success: false, error: err.message }
+						});
+						return;
 					}
 					
 					// Wait 60 seconds and try again
 					await new Promise(resolve => setTimeout(resolve, 60000));
 					return pollAndUnpause();
 				}
-				
-				// Device is paused, now unpause it
-				console.log(`[${profile.name}] Device is paused, unpausing now...`);
-				await e._put(profile.profileUrl, { paused: false });
-				console.log(`[${profile.name}] Successfully unpaused!`);
-				return true;
-			} catch (err) {
-				console.error(`[${profile.name}] Error during polling:`, err);
-				
-				if (attempts >= maxAttempts) {
-					throw err;
-				}
-				
-				// Wait 60 seconds and try again
-				await new Promise(resolve => setTimeout(resolve, 60000));
-				return pollAndUnpause();
-			}
-		};
-		
-		// Start the polling process (this will run in the background)
-		const success = await pollAndUnpause();
-		
-		if (success) {
-			res.json({ 
-				success: true, 
-				message: `${profile.name} unpaused successfully after waiting for pause`,
-				profile: profileKey
+			};
+			
+			await pollAndUnpause();
+		})().catch(err => {
+			console.error(`[${profile.name}] Fatal error in background job ${jobId}:`, err);
+			backgroundJobs.set(jobId, {
+				...backgroundJobs.get(jobId),
+				status: 'failed',
+				result: { success: false, error: err.message }
 			});
-		} else {
-			res.status(408).json({ 
-				error: `Timeout waiting for ${profile.name} to be paused`,
-				profile: profileKey
-			});
-		}
+		});
+		
 	} catch (err) {
 		console.error('Error in unpause-when-ready:', err);
+		res.status(500).json({ error: err.message });
+	}
+});
+
+// Check status of background job
+app.get('/api/job-status/:jobId', async (req, res) => {
+	try {
+		const jobId = req.params.jobId;
+		const job = backgroundJobs.get(jobId);
+		
+		if (!job) {
+			return res.status(404).json({ error: 'Job not found' });
+		}
+		
+		res.json(job);
+	} catch (err) {
+		console.error('Error checking job status:', err);
 		res.status(500).json({ error: err.message });
 	}
 });
